@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.pms.system.mapper.CriminalsArchiveMapper">
+<mapper namespace="com.pms.pm.mapper.CriminalsArchiveMapper">
     
     <resultMap type="CriminalsArchive" id="CriminalsArchiveResult">
         <result property="id"    column="id"    />

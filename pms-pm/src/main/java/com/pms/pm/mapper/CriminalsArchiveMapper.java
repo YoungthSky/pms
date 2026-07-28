@@ -1,7 +1,7 @@
-package com.pms.system.mapper;
+package com.pms.pm.mapper;
 
 import java.util.List;
-import com.pms.system.domain.CriminalsArchive;
+import com.pms.pm.domain.CriminalsArchive;
 
 /**
  * 罪犯基础档案Mapper接口

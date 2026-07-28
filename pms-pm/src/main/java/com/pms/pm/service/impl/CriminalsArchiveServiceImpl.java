@@ -1,11 +1,11 @@
-package com.pms.system.service.impl;
+package com.pms.pm.service.impl;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.pms.system.mapper.CriminalsArchiveMapper;
-import com.pms.system.domain.CriminalsArchive;
-import com.pms.system.service.ICriminalsArchiveService;
+import com.pms.pm.mapper.CriminalsArchiveMapper;
+import com.pms.pm.domain.CriminalsArchive;
+import com.pms.pm.service.ICriminalsArchiveService;
 
 /**
  * 罪犯基础档案Service业务层处理

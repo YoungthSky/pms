@@ -170,6 +170,13 @@
                 <version>${pms.version}</version>
             </dependency>
 
+            <!-- 监狱管理模块-->
+            <dependency>
+                <groupId>com.pms</groupId>
+                <artifactId>pms-pm</artifactId>
+                <version>${pms.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -180,6 +187,7 @@
         <module>pms-quartz</module>
         <module>pms-generator</module>
         <module>pms-common</module>
+        <module>pms-pm</module>
     </modules>
     <packaging>pom</packaging>
 

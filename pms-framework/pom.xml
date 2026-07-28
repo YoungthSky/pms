@@ -59,6 +59,12 @@
             <artifactId>pms-system</artifactId>
         </dependency>
 
+        <!-- 监狱管理模块-->
+        <dependency>
+            <groupId>com.pms</groupId>
+            <artifactId>pms-pm</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

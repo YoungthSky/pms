@@ -1,4 +1,4 @@
-package com.pms.system.domain;
+package com.pms.pm.domain;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;

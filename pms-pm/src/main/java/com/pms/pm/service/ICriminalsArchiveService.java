@@ -1,7 +1,7 @@
-package com.pms.system.service;
+package com.pms.pm.service;
 
 import java.util.List;
-import com.pms.system.domain.CriminalsArchive;
+import com.pms.pm.domain.CriminalsArchive;
 
 /**
  * 罪犯基础档案Service接口
