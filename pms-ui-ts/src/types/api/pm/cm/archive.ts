@@ -1,4 +1,4 @@
-import type { PageDomain, BaseEntity } from "../common";
+import type { PageDomain, BaseEntity } from "../../common";
 
 /** 罪犯基础档案配置分页查询参数 */
 export interface ArchiveQueryParams extends PageDomain {

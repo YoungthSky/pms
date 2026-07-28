@@ -123,8 +123,8 @@
 </template>
 
 <script setup lang="ts" name="Archive">
-import type { CriminalsArchive, ArchiveQueryParams } from "@/types/api/cm/archive"
-import { listArchive, getArchive, delArchive, addArchive, updateArchive } from "@/api/cm/archive"
+import type { CriminalsArchive, ArchiveQueryParams } from "@/types/api/pm/cm/archive"
+import { listArchive, getArchive, delArchive, addArchive, updateArchive } from "@/api/pm/cm/archive"
 
 const { proxy } = getCurrentInstance()
 
