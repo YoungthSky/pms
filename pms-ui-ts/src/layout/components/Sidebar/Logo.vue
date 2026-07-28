@@ -2,12 +2,14 @@
   <div class="sidebar-logo-container" :class="{ 'collapse': collapse }">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo" />
-        <h1 v-else class="sidebar-title">{{ title }}</h1>
+        <img v-if="logo" :src="policeBadge" class="sidebar-logo" />
+        <!-- <h1 v-else class="sidebar-title">{{ title }}</h1> -->
+        <h1 v-else class="sidebar-title">执法保全系统</h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo" />
-        <h1 class="sidebar-title">{{ title }}</h1>
+        <img v-if="logo" :src="policeBadge" class="sidebar-logo" />
+        <!-- <h1 class="sidebar-title">{{ title }}</h1> -->
+        <h1 class="sidebar-title">执法保全系统</h1>
       </router-link>
     </transition>
   </div>
@@ -15,6 +17,7 @@
 
 <script setup lang="ts">
 import logo from '@/assets/logo/logo.png'
+import policeBadge from '@/assets/logo/police-badge.svg'
 import useSettingsStore from '@/store/modules/settings'
 import variables from '@/assets/styles/variables.module.scss'
 

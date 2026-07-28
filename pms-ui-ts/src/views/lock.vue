@@ -53,6 +53,15 @@ const currentDate = ref<string>('')
 const passwordInput = ref<HTMLInputElement | null>(null)
 const particleCanvas = ref<HTMLCanvasElement | null>(null)
 
+interface Particle {
+  x: number
+  y: number
+  r: number
+  dx: number
+  dy: number
+  alpha: number
+}
+
 let timer: any = null
 let animationId: any  = null
 let particles: any = []
@@ -130,7 +139,7 @@ const initParticles = () => {
 
   const draw = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    particles.forEach(p => {
+    particles.forEach((p: Particle)  => {
       ctx.beginPath()
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
       ctx.fillStyle = `rgba(255,255,255,${p.alpha})`

@@ -1,5 +1,7 @@
 <template>
   <div class="login">
+
+    <img :src="policeBadge" class="login-logo" />
     <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">{{ title }}</h3>
       <el-form-item prop="username">
@@ -40,7 +42,7 @@
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
+      <!-- <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox> -->
       <el-form-item style="width:100%;">
         <el-button
           :loading="loading"
@@ -65,6 +67,7 @@
 </template>
 
 <script setup lang="ts">
+import policeBadge from '@/assets/logo/police-badge.svg'
 import { getCodeImg } from "@/api/login"
 import Cookies from "js-cookie"
 import { encrypt, decrypt } from "@/utils/jsencrypt"
@@ -82,7 +85,7 @@ const { proxy } = getCurrentInstance()
 
 const loginForm = ref<LoginForm>({
   username: "admin",
-  password: "admin123",
+  password: "",
   rememberMe: false,
   code: "",
   uuid: ""
@@ -170,11 +173,17 @@ getCookie()
 <style lang='scss' scoped>
 .login {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100%;
   background-image: url("../assets/images/login-background.jpg");
   background-size: cover;
+}
+.login-logo {
+      width: 180px;
+      height: 216px;
+      margin-bottom: 20px;
 }
 .title {
   margin: 0px auto 30px auto;
