@@ -1,4 +1,4 @@
-package com.pms.web.controller.cm;
+package com.pms.web.controller.pm;
 
 import java.util.List;
 import jakarta.servlet.http.HttpServletResponse;

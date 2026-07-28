@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pms.pm.mapper.MedicalRecordsMapper">
+    
+    <resultMap type="MedicalRecords" id="MedicalRecordsResult">
+        <result property="id"    column="id"    />
+        <result property="criminalNo"    column="criminal_no"    />
+        <result property="medicalType"    column="medical_type"    />
+        <result property="recordFilePath"    column="record_file_path"    />
+        <result property="createdAt"    column="created_at"    />
+    </resultMap>
+
+    <sql id="selectMedicalRecordsVo">
+        select id, criminal_no, medical_type, record_file_path, created_at from t_medical_records
+    </sql>
+
+    <select id="selectMedicalRecordsList" parameterType="MedicalRecords" resultMap="MedicalRecordsResult">
+        <include refid="selectMedicalRecordsVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectMedicalRecordsById" parameterType="String" resultMap="MedicalRecordsResult">
+        <include refid="selectMedicalRecordsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMedicalRecords" parameterType="MedicalRecords" useGeneratedKeys="true" keyProperty="id">
+        insert into t_medical_records
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="criminalNo != null">criminal_no,</if>
+            <if test="medicalType != null">medical_type,</if>
+            <if test="recordFilePath != null and recordFilePath != ''">record_file_path,</if>
+            <if test="createdAt != null">created_at,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="criminalNo != null">#{criminalNo},</if>
+            <if test="medicalType != null">#{medicalType},</if>
+            <if test="recordFilePath != null and recordFilePath != ''">#{recordFilePath},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMedicalRecords" parameterType="MedicalRecords">
+        update t_medical_records
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="criminalNo != null">criminal_no = #{criminalNo},</if>
+            <if test="medicalType != null">medical_type = #{medicalType},</if>
+            <if test="recordFilePath != null and recordFilePath != ''">record_file_path = #{recordFilePath},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMedicalRecordsById" parameterType="String">
+        delete from t_medical_records where id = #{id}
+    </delete>
+
+    <delete id="deleteMedicalRecordsByIds" parameterType="String">
+        delete from t_medical_records where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
