@@ -44,12 +44,51 @@
           <image-preview :src="scope.row.basicInfoPath" :width="50" :height="50" />
         </template>
       </el-table-column>
-       <el-table-column label="就医信息" align="center" width="100">
+
+      <el-table-column label="就医信息" align="center" width="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" @click="handleMedicalInfo(scope.row)">就医信息</el-button>
+          <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
+          <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
+            v-hasPermi="['system:archive:add']">新增</el-button>
         </template>
       </el-table-column>
-      
+      <el-table-column label="管控信息" align="center" width="small-padding fixed-width">
+        <template #default="scope">
+          <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
+          <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
+            v-hasPermi="['system:archive:add']">新增</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="减假暂信息" align="center" width="small-padding fixed-width">
+        <template #default="scope">
+          <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
+          <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
+            v-hasPermi="['system:archive:add']">新增</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="教育改造信息" align="center" width="small-padding fixed-width">
+        <template #default="scope">
+          <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
+          <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
+            v-hasPermi="['system:archive:add']">新增</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="亲情电话信息" align="center" width="small-padding fixed-width">
+        <template #default="scope">
+          <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
+          <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
+            v-hasPermi="['system:archive:add']">新增</el-button>
+        </template>
+      </el-table-column>
+       <el-table-column label="亲情会见信息" align="center" width="small-padding fixed-width">
+        <template #default="scope">
+          <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
+          <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
+            v-hasPermi="['system:archive:add']">新增</el-button>
+        </template>
+      </el-table-column>
+
+
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
@@ -60,8 +99,8 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize"
-      @pagination="getList" />
+    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize" @pagination="getList" />
 
     <!-- 添加或修改罪犯基础档案对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
