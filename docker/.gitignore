@@ -1,0 +1,7 @@
+# Docker 运行时数据（不提交到Git）
+data/
+docker-export/
+
+# 构建产物（由脚本自动生成）
+docker/backend/pms-admin.jar
+docker/nginx/dist/

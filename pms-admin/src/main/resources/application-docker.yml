@@ -1,0 +1,98 @@
+# Docker环境配置
+# 通过 --spring.profiles.active=docker 激活
+# 覆盖 application.yml 和 application-druid.yml 中的默认配置
+
+# 项目相关配置（覆盖）
+ruoyi:
+  # 文件上传路径（容器内路径，通过数据卷持久化）
+  profile: /pms/uploadPath
+  # 获取ip地址开关
+  addressEnabled: false
+
+# 日志配置（生产环境降低日志级别）
+logging:
+  level:
+    com.pms: info
+    org.springframework: warn
+
+# Spring配置（覆盖）
+spring:
+  # 关闭热部署
+  devtools:
+    restart:
+      enabled: false
+  # Redis配置（指向Docker服务名）
+  data:
+    redis:
+      host: redis
+      port: 6379
+      database: 0
+      password: ${REDIS_PASSWORD:-pms_redis_2026}
+      timeout: 10s
+      lettuce:
+        pool:
+          min-idle: 0
+          max-idle: 8
+          max-active: 8
+          max-wait: -1ms
+  # 数据源配置（指向Docker MySQL服务）
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      # 主库数据源
+      master:
+        url: jdbc:mysql://mysql:3306/pms?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+        username: ${MYSQL_USER:-pms}
+        password: ${MYSQL_PASSWORD:-pms_db_2026}
+      # 从库数据源
+      slave:
+        enabled: false
+        url:
+        username:
+        password:
+      # 初始连接数
+      initialSize: 5
+      # 最小连接池数量
+      minIdle: 10
+      # 最大连接池数量
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置连接超时时间
+      connectTimeout: 30000
+      # 配置网络超时时间
+      socketTimeout: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
+      maxEvictableIdleTimeMillis: 900000
+      # 配置检测连接是否有效
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      webStatFilter:
+        enabled: true
+      statViewServlet:
+        enabled: true
+        allow:
+        url-pattern: /druid/*
+        login-username: ${DRUID_USERNAME:-admin}
+        login-password: ${DRUID_PASSWORD:-pms_druid_2026}
+      filter:
+        stat:
+          enabled: true
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+
+# 关闭Swagger（生产环境）
+springdoc:
+  swagger-ui:
+    enabled: false
