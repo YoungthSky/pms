@@ -171,8 +171,10 @@ import { listArchive, getArchive, delArchive, addArchive, updateArchive } from "
 import { useRouter } from "vue-router"
 import { getToken } from "@/utils/auth"
 import { UploadFilled } from "@element-plus/icons-vue"
+import useTagsViewStore from '@/store/modules/tagsView'
 
 const router = useRouter()
+const tagsViewStore = useTagsViewStore()
 
 
 const { proxy } = getCurrentInstance()
@@ -224,11 +226,17 @@ const { queryParams, form, rules } = toRefs(data)
 
 /** 就医信息按钮操作 */
 function handleMedicalInfo(row: CriminalsArchive) {
+  // 清除就医记录页面的 keep-alive 缓存，强制组件重建以刷新数据
+  const index = tagsViewStore.cachedViews.indexOf('Medical')
+  if (index > -1) {
+    tagsViewStore.cachedViews.splice(index, 1)
+  }
   router.push({
     path: '/pm/medical',
     query: {
       criminalNo: row.criminalNo,
-      criminalName: row.criminalName
+      criminalName: row.criminalName,
+      t: Date.now()
     }
   })
 }

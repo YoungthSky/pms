@@ -123,8 +123,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="就医记录文件" prop="recordFilePath">
-              <el-input v-model="form.recordFilePath" placeholder="请输入就医记录文件路径" />
+            <el-form-item label="就医记录" prop="recordFilePath">
+              <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
+            v-hasPermi="['system:archive:add']">上传PDF</el-button>
+              <!-- <el-input v-model="form.recordFilePath" placeholder="请输入就医记录文件" /> -->
             </el-form-item>
           </el-col>
         </el-row>
@@ -184,6 +186,29 @@ const data = reactive({
 })
 
 const { queryParams, form, rules } = toRefs(data)
+
+/** 组件被激活时调用（keep-alive 缓存组件再次进入时触发） */
+onActivated(() => {
+  const newCriminalNo = (route.query.criminalNo as string) || ''
+  const newCriminalName = (route.query.criminalName as string) || ''
+  criminalNo.value = newCriminalNo
+  criminalName.value = newCriminalName
+  queryParams.value.criminalNo = newCriminalNo || undefined
+  queryParams.value.pageNum = 1
+  getList()
+})
+
+/** 监听路由参数变化，当从基本信息页跳转过来时自动刷新数据 */
+watch(() => route.query.criminalNo, (newVal) => {
+  const val = (newVal as string) || ''
+  if (val !== criminalNo.value) {
+    criminalNo.value = val
+    criminalName.value = (route.query.criminalName as string) || ''
+    queryParams.value.criminalNo = val || undefined
+    queryParams.value.pageNum = 1
+    getList()
+  }
+})
 
 /** 返回罪犯列表 */
 function handleGoBack() {
