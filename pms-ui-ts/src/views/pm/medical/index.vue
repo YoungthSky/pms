@@ -83,7 +83,11 @@
           <el-tag v-else type="info">未知</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="就医记录" align="center" prop="recordFilePath" show-overflow-tooltip />
+      <el-table-column label="就医记录" align="center" prop="recordFilePath" show-overflow-tooltip >
+         <template #default="scope">
+          <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
+        </template>
+      </el-table-column>
       <el-table-column label="录入时间" align="center" prop="createdAt" width="180">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createdAt, '{y}-{m}-{d}') }}</span>
