@@ -39,53 +39,51 @@
       <el-table-column label="罪犯姓名" align="center" prop="criminalName" />
       <el-table-column label="罪犯编号" align="center" prop="criminalNo" />
 
-      <el-table-column label="基本信息" align="center" prop="basicInfoPath" width="small-padding fixed-width">
+      <el-table-column label="基本信息" align="center" prop="basicInfoPath" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-tooltip content="未上传基本信息" placement="top" :disabled="!!scope.row.basicInfoPath">
-            <el-button link type="primary" icon="View" @click="handleViewBasicInfo(scope.row)"
-              :disabled="!scope.row.basicInfoPath">查看</el-button>
-          </el-tooltip>
+          <el-button link type="primary" icon="View" @click="handleViewBasicInfo(scope.row)"
+            :disabled="!scope.row.basicInfoPath">查看</el-button>
           <el-button link type="primary" icon="Plus" @click="handleUploadBasicInfo(scope.row)"
             v-hasPermi="['system:archive:edit']">新增</el-button>
         </template>
       </el-table-column>
 
-      <el-table-column label="就医信息" align="center" width="small-padding fixed-width">
+      <el-table-column label="就医信息" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
           <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
             v-hasPermi="['system:archive:add']">新增</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="管控信息" align="center" width="small-padding fixed-width">
+      <el-table-column label="管控信息" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
           <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
             v-hasPermi="['system:archive:add']">新增</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="减假暂信息" align="center" width="small-padding fixed-width">
+      <el-table-column label="减假暂信息" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
           <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
             v-hasPermi="['system:archive:add']">新增</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="教育改造信息" align="center" width="small-padding fixed-width">
+      <el-table-column label="教育改造信息" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
           <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
             v-hasPermi="['system:archive:add']">新增</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="亲情电话信息" align="center" width="small-padding fixed-width">
+      <el-table-column label="亲情电话信息" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
           <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
             v-hasPermi="['system:archive:add']">新增</el-button>
         </template>
       </el-table-column>
-       <el-table-column label="亲情会见信息" align="center" width="small-padding fixed-width">
+       <el-table-column label="亲情会见信息" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="view" @click="handleMedicalInfo(scope.row)">查看</el-button>
           <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
@@ -227,9 +225,10 @@ const { queryParams, form, rules } = toRefs(data)
 /** 就医信息按钮操作 */
 function handleMedicalInfo(row: CriminalsArchive) {
   router.push({
-    path: '/pm/cm/medical',
+    path: '/pm/medical',
     query: {
-      criminalNo: row.criminalNo
+      criminalNo: row.criminalNo,
+      criminalName: row.criminalName
     }
   })
 }

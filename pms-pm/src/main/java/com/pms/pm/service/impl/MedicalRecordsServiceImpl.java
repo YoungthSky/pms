@@ -11,7 +11,7 @@ import com.pms.pm.service.IMedicalRecordsService;
  * 罪犯就医记录Service业务层处理
  * 
  * @author LiuZhengPing
- * @date 2026-07-28
+ * @date 2026-08-01
  */
 @Service
 public class MedicalRecordsServiceImpl implements IMedicalRecordsService 
@@ -26,7 +26,7 @@ public class MedicalRecordsServiceImpl implements IMedicalRecordsService
      * @return 罪犯就医记录
      */
     @Override
-    public MedicalRecords selectMedicalRecordsById(String id)
+    public MedicalRecords selectMedicalRecordsById(Long id)
     {
         return medicalRecordsMapper.selectMedicalRecordsById(id);
     }
@@ -74,7 +74,7 @@ public class MedicalRecordsServiceImpl implements IMedicalRecordsService
      * @return 结果
      */
     @Override
-    public int deleteMedicalRecordsByIds(String[] ids)
+    public int deleteMedicalRecordsByIds(Long[] ids)
     {
         return medicalRecordsMapper.deleteMedicalRecordsByIds(ids);
     }
@@ -86,7 +86,7 @@ public class MedicalRecordsServiceImpl implements IMedicalRecordsService
      * @return 结果
      */
     @Override
-    public int deleteMedicalRecordsById(String id)
+    public int deleteMedicalRecordsById(Long id)
     {
         return medicalRecordsMapper.deleteMedicalRecordsById(id);
     }

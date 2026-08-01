@@ -27,3 +27,7 @@ export * from "./monitor/online";
 
 // 代码生成模块
 export * from "./tool/gen";
+
+// pm 模块
+export * from "./pm/medical";
+export * from "./pm/cm/archive";

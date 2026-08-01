@@ -2,6 +2,10 @@ import type { PageDomain, BaseEntity } from "../common";
 
 /** 罪犯就医记录配置分页查询参数 */
 export interface MedicalQueryParams extends PageDomain {
+  /** 罪犯编号 */
+  criminalNo?: string;
+  /** 就医类型 */
+  medicalType?: number;
 }
 
 /** 罪犯就医记录配置信息 */

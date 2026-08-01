@@ -7,7 +7,7 @@ import com.pms.pm.domain.MedicalRecords;
  * 罪犯就医记录Service接口
  * 
  * @author LiuZhengPing
- * @date 2026-07-28
+ * @date 2026-08-01
  */
 public interface IMedicalRecordsService 
 {
@@ -17,7 +17,7 @@ public interface IMedicalRecordsService
      * @param id 罪犯就医记录主键
      * @return 罪犯就医记录
      */
-    public MedicalRecords selectMedicalRecordsById(String id);
+    public MedicalRecords selectMedicalRecordsById(Long id);
 
     /**
      * 查询罪犯就医记录列表
@@ -49,7 +49,7 @@ public interface IMedicalRecordsService
      * @param ids 需要删除的罪犯就医记录主键集合
      * @return 结果
      */
-    public int deleteMedicalRecordsByIds(String[] ids);
+    public int deleteMedicalRecordsByIds(Long[] ids);
 
     /**
      * 删除罪犯就医记录信息
@@ -57,5 +57,5 @@ public interface IMedicalRecordsService
      * @param id 罪犯就医记录主键
      * @return 结果
      */
-    public int deleteMedicalRecordsById(String id);
+    public int deleteMedicalRecordsById(Long id);
 }

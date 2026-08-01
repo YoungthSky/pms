@@ -19,10 +19,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectMedicalRecordsList" parameterType="MedicalRecords" resultMap="MedicalRecordsResult">
         <include refid="selectMedicalRecordsVo"/>
         <where>  
+            <if test="criminalNo != null  and criminalNo != ''"> and criminal_no = #{criminalNo}</if>
+            <if test="medicalType != null "> and medical_type = #{medicalType}</if>
         </where>
+        order by created_at desc
     </select>
     
-    <select id="selectMedicalRecordsById" parameterType="String" resultMap="MedicalRecordsResult">
+    <select id="selectMedicalRecordsById" parameterType="Long" resultMap="MedicalRecordsResult">
         <include refid="selectMedicalRecordsVo"/>
         where id = #{id}
     </select>
@@ -30,13 +33,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertMedicalRecords" parameterType="MedicalRecords" useGeneratedKeys="true" keyProperty="id">
         insert into t_medical_records
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="criminalNo != null">criminal_no,</if>
+            <if test="criminalNo != null and criminalNo != ''">criminal_no,</if>
             <if test="medicalType != null">medical_type,</if>
             <if test="recordFilePath != null and recordFilePath != ''">record_file_path,</if>
             <if test="createdAt != null">created_at,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="criminalNo != null">#{criminalNo},</if>
+            <if test="criminalNo != null and criminalNo != ''">#{criminalNo},</if>
             <if test="medicalType != null">#{medicalType},</if>
             <if test="recordFilePath != null and recordFilePath != ''">#{recordFilePath},</if>
             <if test="createdAt != null">#{createdAt},</if>
@@ -46,7 +49,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateMedicalRecords" parameterType="MedicalRecords">
         update t_medical_records
         <trim prefix="SET" suffixOverrides=",">
-            <if test="criminalNo != null">criminal_no = #{criminalNo},</if>
+            <if test="criminalNo != null and criminalNo != ''">criminal_no = #{criminalNo},</if>
             <if test="medicalType != null">medical_type = #{medicalType},</if>
             <if test="recordFilePath != null and recordFilePath != ''">record_file_path = #{recordFilePath},</if>
             <if test="createdAt != null">created_at = #{createdAt},</if>
@@ -54,11 +57,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
 
-    <delete id="deleteMedicalRecordsById" parameterType="String">
+    <delete id="deleteMedicalRecordsById" parameterType="Long">
         delete from t_medical_records where id = #{id}
     </delete>
 
-    <delete id="deleteMedicalRecordsByIds" parameterType="String">
+    <delete id="deleteMedicalRecordsByIds" parameterType="Long">
         delete from t_medical_records where id in 
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}

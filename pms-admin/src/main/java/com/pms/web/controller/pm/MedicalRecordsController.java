@@ -64,7 +64,7 @@ public class MedicalRecordsController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('pm:medical:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") String id)
+    public AjaxResult getInfo(@PathVariable("id") Long id)
     {
         return success(medicalRecordsService.selectMedicalRecordsById(id));
     }
@@ -97,7 +97,7 @@ public class MedicalRecordsController extends BaseController
     @PreAuthorize("@ss.hasPermi('pm:medical:remove')")
     @Log(title = "罪犯就医记录", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable String[] ids)
+    public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(medicalRecordsService.deleteMedicalRecordsByIds(ids));
     }

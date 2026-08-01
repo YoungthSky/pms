@@ -1,11 +1,20 @@
 <template>
   <div class="app-container">
-    <!-- <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="80px">
+      <el-form-item label="罪犯编号" prop="criminalNo">
+        <el-input v-model="queryParams.criminalNo" placeholder="请输入罪犯编号" clearable @keyup.enter="handleQuery" />
+      </el-form-item>
+      <el-form-item label="就医类型" prop="medicalType">
+        <el-select v-model="queryParams.medicalType" placeholder="请选择就医类型" clearable>
+          <el-option label="狱内就医" :value="1" />
+          <el-option label="离监就医" :value="2" />
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
-    </el-form> -->
+    </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -46,13 +55,35 @@
           v-hasPermi="['pm:medical:export']"
         >导出</el-button>
       </el-col>
+      <!-- <el-col :span="1.5">
+        <el-button type="info" plain icon="Back" @click="handleGoBack">返回罪犯列表</el-button>
+      </el-col> -->
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
+    <el-alert
+      v-if="criminalNo"
+      type="success"
+      :closable="false"
+      show-icon
+      style="margin-bottom: 12px"
+    >
+      <template #title>
+        <span style="font-weight: bold; font-family: SimHei, '黑体', sans-serif;">当前查看  罪犯姓名：<span style="color: red;">{{ criminalName }}</span>  罪犯编号：<span style="color: red;">{{ criminalNo }}</span> 的就医记录</span>
+      </template>
+    </el-alert>
+
     <el-table v-loading="loading" :data="medicalList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <!-- <el-table-column label="自增主键" align="center" prop="id" /> -->
-      <el-table-column label="就医记录" align="center" prop="recordFilePath" />
+      <!-- <el-table-column label="罪犯编号" align="center" prop="criminalNo" /> -->
+      <el-table-column label="就医类型" align="center" prop="medicalType">
+        <template #default="scope">
+          <el-tag v-if="scope.row.medicalType === 1" type="success">狱内就医</el-tag>
+          <el-tag v-else-if="scope.row.medicalType === 2" type="warning">离监就医</el-tag>
+          <el-tag v-else type="info">未知</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="就医记录" align="center" prop="recordFilePath" show-overflow-tooltip />
       <el-table-column label="录入时间" align="center" prop="createdAt" width="180">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createdAt, '{y}-{m}-{d}') }}</span>
@@ -79,8 +110,21 @@
       <el-form ref="medicalRef" :model="form" :rules="rules" label-width="100px">
         <el-row>
           <el-col :span="24">
-            <el-form-item label="就医记录" prop="recordFilePath">
-              <el-input v-model="form.recordFilePath" type="textarea" placeholder="请输入内容" />
+            <el-form-item label="罪犯编号" prop="criminalNo">
+              <el-input v-model="form.criminalNo" placeholder="请输入罪犯编号" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="就医类型" prop="medicalType">
+              <el-select v-model="form.medicalType" placeholder="请选择就医类型">
+                <el-option label="狱内就医" :value="1" />
+                <el-option label="离监就医" :value="2" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="就医记录文件" prop="recordFilePath">
+              <el-input v-model="form.recordFilePath" placeholder="请输入就医记录文件路径" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -98,8 +142,15 @@
 <script setup lang="ts" name="Medical">
 import type { MedicalRecords, MedicalQueryParams } from "@/types/api/pm/medical"
 import { listMedical, getMedical, delMedical, addMedical, updateMedical } from "@/api/pm/medical"
+import { useRoute, useRouter } from "vue-router"
 
+const route = useRoute()
+const router = useRouter()
 const { proxy } = getCurrentInstance()
+
+/** 从路由参数中获取罪犯编号和罪犯姓名 */
+const criminalNo = ref<string>((route.query.criminalNo as string) || '')
+const criminalName = ref<string>((route.query.criminalName as string) || '')
 
 const medicalList = ref<MedicalRecords[]>([])
 const open = ref<boolean>(false)
@@ -116,18 +167,28 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
+    criminalNo: criminalNo.value || undefined,
+    medicalType: undefined,
   } as MedicalQueryParams,
   rules: {
-    recordFilePath: [
-      { required: true, message: "就医记录不能为空", trigger: "blur" }
+    criminalNo: [
+      { required: true, message: "罪犯编号不能为空", trigger: "blur" }
     ],
-    createdAt: [
-      { required: true, message: "录入时间不能为空", trigger: "blur" }
+    medicalType: [
+      { required: true, message: "就医类型不能为空", trigger: "change" }
+    ],
+    recordFilePath: [
+      { required: true, message: "就医记录文件不能为空", trigger: "blur" }
     ]
   }
 })
 
 const { queryParams, form, rules } = toRefs(data)
+
+/** 返回罪犯列表 */
+function handleGoBack() {
+  router.push('/pm/cm')
+}
 
 /** 查询罪犯就医记录列表 */
 function getList() {
@@ -149,7 +210,7 @@ function cancel() {
 function reset() {
   form.value = {
     id: null,
-    criminalNo: null,
+    criminalNo: criminalNo.value || null,
     medicalType: null,
     recordFilePath: null,
     createdAt: null
@@ -166,6 +227,10 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   proxy.resetForm("queryRef")
+  // 重置后保留罪犯编号筛选
+  if (criminalNo.value) {
+    queryParams.value.criminalNo = criminalNo.value
+  }
   handleQuery()
 }
 
