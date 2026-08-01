@@ -110,12 +110,12 @@
     />
 
     <!-- 添加或修改罪犯就医记录对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+    <el-dialog :title="title" v-model="open" width="500px" append-to-body @close="handleDialogClose">
       <el-form ref="medicalRef" :model="form" :rules="rules" label-width="100px">
         <el-row>
           <el-col :span="24">
             <el-form-item label="罪犯编号" prop="criminalNo">
-              <el-input v-model="form.criminalNo" placeholder="请输入罪犯编号" />
+              <el-input v-model="form.criminalNo" placeholder="请输入罪犯编号" :disabled="!!criminalNo" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -127,17 +127,32 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="就医记录" prop="recordFilePath">
-              <el-button link type="primary" icon="Plus" @click="handleMedicalInfo(scope.row)"
-            v-hasPermi="['system:archive:add']">上传PDF</el-button>
-              <!-- <el-input v-model="form.recordFilePath" placeholder="请输入就医记录文件" /> -->
+            <el-form-item label="就医记录" prop="recordFilePath" required>
+              <div style="width: 100%">
+                <el-upload
+                  ref="uploadRef"
+                  :auto-upload="false"
+                  :limit="1"
+                  :on-change="handleFileChange"
+                  :on-remove="handleFileRemove"
+                  :file-list="fileList"
+                  accept=".pdf"
+                  drag
+                >
+                  <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+                  <div class="el-upload__text">将PDF文件拖到此处，或<em>点击选择文件</em></div>
+                  <template #tip>
+                    <div class="el-upload__tip">只能上传 PDF 文件，大小不超过 50MB</div>
+                  </template>
+                </el-upload>
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button type="primary" :loading="submitLoading" @click="submitForm">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
@@ -147,8 +162,9 @@
 
 <script setup lang="ts" name="Medical">
 import type { MedicalRecords, MedicalQueryParams } from "@/types/api/pm/medical"
-import { listMedical, getMedical, delMedical, addMedical, updateMedical } from "@/api/pm/medical"
+import { listMedical, getMedical, delMedical, addMedical, updateMedical, addMedicalWithFile } from "@/api/pm/medical"
 import { useRoute, useRouter } from "vue-router"
+import { UploadFilled } from "@element-plus/icons-vue"
 
 const route = useRoute()
 const router = useRouter()
@@ -167,6 +183,11 @@ const single = ref<boolean>(true)
 const multiple = ref<boolean>(true)
 const total = ref<number>(0)
 const title = ref<string>("")
+const submitLoading = ref<boolean>(false)
+const uploadRef = ref()
+const fileList = ref<any[]>([])
+const selectedFile = ref<File | null>(null)
+const baseUrl = import.meta.env.VITE_APP_BASE_API
 
 const data = reactive({
   form: {} as MedicalRecords,
@@ -184,7 +205,7 @@ const data = reactive({
       { required: true, message: "就医类型不能为空", trigger: "change" }
     ],
     recordFilePath: [
-      { required: true, message: "就医记录文件不能为空", trigger: "blur" }
+      { required: true, message: "就医记录文件不能为空", trigger: "change" }
     ]
   }
 })
@@ -229,10 +250,46 @@ function getList() {
   })
 }
 
-/** 取消按钮 */
+/** 取消按钮 - 撤销所有操作，不对数据库操作，不上传文件 */
 function cancel() {
   open.value = false
   reset()
+}
+
+/** 对话框关闭时清理状态 */
+function handleDialogClose() {
+  fileList.value = []
+  selectedFile.value = null
+  submitLoading.value = false
+}
+
+/** 文件选择变化 */
+function handleFileChange(uploadFile: any) {
+  const rawFile = uploadFile.raw as File
+  if (!rawFile) return
+  // 校验文件类型
+  if (rawFile.type !== 'application/pdf') {
+    proxy.$modal.msgError('只能上传 PDF 格式文件!')
+    fileList.value = []
+    selectedFile.value = null
+    return
+  }
+  // 校验文件大小
+  if (rawFile.size / 1024 / 1024 > 50) {
+    proxy.$modal.msgError('文件大小不能超过 50MB!')
+    fileList.value = []
+    selectedFile.value = null
+    return
+  }
+  selectedFile.value = rawFile
+  // 标记表单已选择文件（用于校验）
+  form.value.recordFilePath = rawFile.name
+}
+
+/** 文件移除 */
+function handleFileRemove() {
+  selectedFile.value = null
+  form.value.recordFilePath = null
 }
 
 /** 表单重置 */
@@ -244,6 +301,8 @@ function reset() {
     recordFilePath: null,
     createdAt: null
   }
+  fileList.value = []
+  selectedFile.value = null
   proxy.resetForm("medicalRef")
 }
 
@@ -293,16 +352,32 @@ function submitForm() {
   proxy.$refs["medicalRef"].validate((valid: boolean) => {
     if (valid) {
       if (form.value.id != null) {
+        // 修改操作
         updateMedical(form.value).then(() => {
           proxy.$modal.msgSuccess("修改成功")
           open.value = false
           getList()
         })
       } else {
-        addMedical(form.value).then(() => {
+        // 新增操作 - 校验是否已选择PDF文件
+        if (!selectedFile.value) {
+          proxy.$modal.msgWarning("请先选择就医记录PDF文件")
+          return
+        }
+        // 构建 FormData，将文件和表单字段一起提交
+        const formData = new FormData()
+        formData.append('file', selectedFile.value)
+        formData.append('criminalNo', form.value.criminalNo)
+        formData.append('medicalType', String(form.value.medicalType))
+        submitLoading.value = true
+        addMedicalWithFile(formData).then((res) => {
           proxy.$modal.msgSuccess("新增成功")
           open.value = false
           getList()
+        }).catch(() => {
+          proxy.$modal.msgError("新增失败，请重试")
+        }).finally(() => {
+          submitLoading.value = false
         })
       }
     }
@@ -318,6 +393,16 @@ function handleDelete(row: MedicalRecords) {
     getList()
     proxy.$modal.msgSuccess("删除成功")
   }).catch(() => {})
+}
+
+/** 查看就医记录PDF */
+function handleMedicalInfo(row: MedicalRecords) {
+  if (row.recordFilePath) {
+    const url = baseUrl + row.recordFilePath
+    window.open(url, '_blank')
+  } else {
+    proxy.$modal.msgWarning("暂无就医记录文件")
+  }
 }
 
 /** 导出按钮操作 */

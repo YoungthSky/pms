@@ -27,6 +27,16 @@ export function addMedical(data: MedicalRecords): Promise<AjaxResult> {
   })
 }
 
+// 新增罪犯就医记录（含PDF文件上传）
+export function addMedicalWithFile(data: FormData): Promise<AjaxResult> {
+  return request({
+    url: '/pm/medical/addWithFile',
+    method: 'post',
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: data
+  })
+}
+
 // 修改罪犯就医记录
 export function updateMedical(data: MedicalRecords): Promise<AjaxResult> {
   return request({
