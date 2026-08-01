@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pms.pm.mapper.MedicalVideosMapper">
+    
+    <resultMap type="MedicalVideos" id="MedicalVideosResult">
+        <result property="id"    column="id"    />
+        <result property="criminalNo"    column="criminal_no"    />
+        <result property="videoFilePath"    column="video_file_path"    />
+        <result property="createdAt"    column="created_at"    />
+    </resultMap>
+
+    <sql id="selectMedicalVideosVo">
+        select id, criminal_no, video_file_path, created_at from t_medical_videos
+    </sql>
+
+    <select id="selectMedicalVideosList" parameterType="MedicalVideos" resultMap="MedicalVideosResult">
+        <include refid="selectMedicalVideosVo"/>
+        <where>  
+            <if test="criminalNo != null  and criminalNo != ''"> and criminal_no = #{criminalNo}</if>
+        </where>
+        order by created_at desc
+    </select>
+    
+    <select id="selectMedicalVideosById" parameterType="Long" resultMap="MedicalVideosResult">
+        <include refid="selectMedicalVideosVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMedicalVideos" parameterType="MedicalVideos" useGeneratedKeys="true" keyProperty="id">
+        insert into t_medical_videos
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="criminalNo != null and criminalNo != ''">criminal_no,</if>
+            <if test="videoFilePath != null and videoFilePath != ''">video_file_path,</if>
+            <if test="createdAt != null">created_at,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="criminalNo != null and criminalNo != ''">#{criminalNo},</if>
+            <if test="videoFilePath != null and videoFilePath != ''">#{videoFilePath},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+         </trim>
+    </insert>
+
+    <delete id="deleteMedicalVideosById" parameterType="Long">
+        delete from t_medical_videos where id = #{id}
+    </delete>
+
+    <delete id="deleteMedicalVideosByIds" parameterType="Long">
+        delete from t_medical_videos where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

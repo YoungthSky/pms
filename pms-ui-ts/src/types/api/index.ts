@@ -30,4 +30,5 @@ export * from "./tool/gen";
 
 // pm 模块
 export * from "./pm/medical";
+export * from "./pm/video";
 export * from "./pm/cm/archive";
