@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="80px">
-      <el-form-item label="罪犯编号" prop="criminalNo">
+      <!-- <el-form-item label="罪犯编号" prop="criminalNo">
         <el-input v-model="queryParams.criminalNo" placeholder="请输入罪犯编号" clearable @keyup.enter="handleQuery" />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="就医类型" prop="medicalType">
         <el-select v-model="queryParams.medicalType" placeholder="请选择就医类型" clearable>
           <el-option label="狱内就医" :value="1" />
@@ -199,7 +199,7 @@ onActivated(() => {
 })
 
 /** 监听路由参数变化，当从基本信息页跳转过来时自动刷新数据 */
-watch(() => route.query.criminalNo, (newVal) => {
+watch(() => route.query.criminalNo, (newVal: string | string[]) => {
   const val = (newVal as string) || ''
   if (val !== criminalNo.value) {
     criminalNo.value = val
