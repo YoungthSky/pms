@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import com.pms.common.annotation.Log;
+import com.pms.common.config.RuoYiConfig;
 import com.pms.common.core.controller.BaseController;
 import com.pms.common.core.domain.AjaxResult;
 import com.pms.common.enums.BusinessType;
+import com.pms.common.utils.file.FileUploadUtils;
 import com.pms.pm.domain.CriminalsArchive;
 import com.pms.pm.service.ICriminalsArchiveService;
 import com.pms.common.utils.poi.ExcelUtil;
@@ -100,5 +104,34 @@ public class CriminalsArchiveController extends BaseController
     public AjaxResult remove(@PathVariable String[] ids)
     {
         return toAjax(criminalsArchiveService.deleteCriminalsArchiveByIds(ids));
+    }
+
+    /**
+     * 上传基本信息PDF文件
+     */
+    @PreAuthorize("@ss.hasPermi('system:archive:edit')")
+    @Log(title = "罪犯基础档案", businessType = BusinessType.UPDATE)
+    @PostMapping("/uploadBasicInfo")
+    public AjaxResult uploadBasicInfo(@RequestParam("file") MultipartFile file, @RequestParam("id") String id)
+    {
+        try
+        {
+            // 上传文件路径
+            String filePath = RuoYiConfig.getUploadPath();
+            // 上传并返回新文件名称
+            String fileName = FileUploadUtils.upload(filePath, file);
+            // 更新数据库中的基本信息文件路径
+            CriminalsArchive archive = new CriminalsArchive();
+            archive.setId(id);
+            archive.setBasicInfoPath(fileName);
+            criminalsArchiveService.updateCriminalsArchive(archive);
+            AjaxResult ajax = AjaxResult.success("上传成功");
+            ajax.put("fileName", fileName);
+            return ajax;
+        }
+        catch (Exception e)
+        {
+            return AjaxResult.error(e.getMessage());
+        }
     }
 }

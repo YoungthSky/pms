@@ -44,4 +44,14 @@ export function delArchive(id: number | number[]): Promise<AjaxResult> {
   })
 }
 
+// 上传基本信息PDF文件
+export function uploadBasicInfo(data: FormData): Promise<AjaxResult> {
+  return request({
+    url: '/system/archive/uploadBasicInfo',
+    method: 'post',
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: data
+  })
+}
+
 

@@ -39,9 +39,14 @@
       <el-table-column label="罪犯姓名" align="center" prop="criminalName" />
       <el-table-column label="罪犯编号" align="center" prop="criminalNo" />
 
-      <el-table-column label="基本信息" align="center" prop="basicInfoPath" width="100">
+      <el-table-column label="基本信息" align="center" prop="basicInfoPath" width="small-padding fixed-width">
         <template #default="scope">
-          <image-preview :src="scope.row.basicInfoPath" :width="50" :height="50" />
+          <el-tooltip content="未上传基本信息" placement="top" :disabled="!!scope.row.basicInfoPath">
+            <el-button link type="primary" icon="View" @click="handleViewBasicInfo(scope.row)"
+              :disabled="!scope.row.basicInfoPath">查看</el-button>
+          </el-tooltip>
+          <el-button link type="primary" icon="Plus" @click="handleUploadBasicInfo(scope.row)"
+            v-hasPermi="['system:archive:edit']">新增</el-button>
         </template>
       </el-table-column>
 
@@ -102,6 +107,35 @@
     <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize" @pagination="getList" />
 
+    <!-- 上传基本信息PDF对话框 -->
+    <el-dialog title="上传基本信息" v-model="uploadOpen" width="450px" append-to-body>
+      <el-upload
+        ref="uploadRef"
+        :action="uploadUrl"
+        :headers="uploadHeaders"
+        :data="uploadData"
+        :limit="1"
+        :auto-upload="false"
+        :on-success="handleUploadSuccess"
+        :on-error="handleUploadError"
+        :before-upload="handleBeforeUpload"
+        accept=".pdf"
+        drag
+      >
+        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <template #tip>
+          <div class="el-upload__tip">只能上传 PDF 文件，大小不超过 50MB</div>
+        </template>
+      </el-upload>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitUpload">确认上传</el-button>
+          <el-button @click="uploadOpen = false">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
     <!-- 添加或修改罪犯基础档案对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="archiveRef" :model="form" :rules="rules" label-width="100px">
@@ -137,6 +171,8 @@
 import type { CriminalsArchive, ArchiveQueryParams } from "@/types/api/pm/cm/archive"
 import { listArchive, getArchive, delArchive, addArchive, updateArchive } from "@/api/pm/cm/archive"
 import { useRouter } from "vue-router"
+import { getToken } from "@/utils/auth"
+import { UploadFilled } from "@element-plus/icons-vue"
 
 const router = useRouter()
 
@@ -145,6 +181,7 @@ const { proxy } = getCurrentInstance()
 
 const archiveList = ref<CriminalsArchive[]>([])
 const open = ref<boolean>(false)
+const uploadOpen = ref<boolean>(false)
 const loading = ref<boolean>(true)
 const showSearch = ref<boolean>(true)
 const ids = ref<number[]>([])
@@ -152,6 +189,10 @@ const single = ref<boolean>(true)
 const multiple = ref<boolean>(true)
 const total = ref<number>(0)
 const title = ref<string>("")
+const baseUrl = import.meta.env.VITE_APP_BASE_API
+const uploadUrl = ref(import.meta.env.VITE_APP_BASE_API + '/system/archive/uploadBasicInfo')
+const uploadHeaders = ref({ Authorization: "Bearer " + getToken() })
+const uploadData = ref<{ id: string }>({ id: '' })
 
 const data = reactive({
   form: {} as CriminalsArchive,
@@ -191,6 +232,58 @@ function handleMedicalInfo(row: CriminalsArchive) {
       criminalNo: row.criminalNo
     }
   })
+}
+
+/** 查看基本信息PDF */
+function handleViewBasicInfo(row: CriminalsArchive) {
+  if (row.basicInfoPath) {
+    const url = baseUrl + row.basicInfoPath
+    window.open(url, '_blank')
+  } else {
+    proxy.$modal.msgWarning("暂无基本信息文件")
+  }
+}
+
+/** 新增基本信息 - 打开上传对话框 */
+function handleUploadBasicInfo(row: CriminalsArchive) {
+  uploadData.value = { id: row.id }
+  uploadOpen.value = true
+}
+
+/** 上传前校验 */
+function handleBeforeUpload(file: File): boolean {
+  const isPdf = file.type === 'application/pdf'
+  if (!isPdf) {
+    proxy.$modal.msgError('只能上传 PDF 格式文件!')
+    return false
+  }
+  const isLt50M = file.size / 1024 / 1024 < 50
+  if (!isLt50M) {
+    proxy.$modal.msgError('文件大小不能超过 50MB!')
+    return false
+  }
+  return true
+}
+
+/** 确认上传 */
+function submitUpload() {
+  proxy.$refs["uploadRef"].submit()
+}
+
+/** 上传成功 */
+function handleUploadSuccess(res: any) {
+  if (res.code === 200) {
+    proxy.$modal.msgSuccess("上传成功")
+    uploadOpen.value = false
+    getList()
+  } else {
+    proxy.$modal.msgError(res.msg)
+  }
+}
+
+/** 上传失败 */
+function handleUploadError() {
+  proxy.$modal.msgError("上传失败")
 }
 
 /** 查询罪犯基础档案列表 */
