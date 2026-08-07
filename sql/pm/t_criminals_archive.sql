@@ -18,7 +18,7 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for t_criminals_archive
+-- Table structure for t_criminals_archive  罪犯基本信息表
 -- ----------------------------
 DROP TABLE IF EXISTS `t_criminals_archive`;
 CREATE TABLE `t_criminals_archive`  (

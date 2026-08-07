@@ -65,6 +65,9 @@ docker save \
 
 # 复制部署文件
 echo "  复制部署配置文件..."
+# 先删除旧的 docker/ 和 sql/ 目录，防止残留文件污染
+rm -rf "$EXPORT_DIR/docker"
+rm -rf "$EXPORT_DIR/sql"
 cp "$PROJECT_DIR/docker-compose.yml" "$EXPORT_DIR/"
 cp "$PROJECT_DIR/.env.docker" "$EXPORT_DIR/"
 cp -r "$PROJECT_DIR/docker" "$EXPORT_DIR/docker"

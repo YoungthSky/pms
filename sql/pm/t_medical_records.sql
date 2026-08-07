@@ -18,7 +18,7 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for t_medical_records
+-- Table structure for t_medical_records  就医记录表
 -- ----------------------------
 DROP TABLE IF EXISTS `t_medical_records`;
 CREATE TABLE `t_medical_records`  (

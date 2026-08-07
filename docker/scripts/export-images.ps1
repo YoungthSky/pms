@@ -55,9 +55,13 @@ Write-Host "  -> Frontend build OK" -ForegroundColor Green
 # ---------- Step 3: Pull base images ----------
 Write-Host "[Step 3/5] Pulling base images..." -ForegroundColor Yellow
 & docker pull mysql:8.0
+if ($LASTEXITCODE -ne 0) { throw "Failed to pull mysql:8.0" }
 & docker pull redis:7
+if ($LASTEXITCODE -ne 0) { throw "Failed to pull redis:7" }
 & docker pull eclipse-temurin:17-jre
+if ($LASTEXITCODE -ne 0) { throw "Failed to pull eclipse-temurin:17-jre" }
 & docker pull nginx:latest
+if ($LASTEXITCODE -ne 0) { throw "Failed to pull nginx:latest" }
 Write-Host "  -> Base images pulled OK" -ForegroundColor Green
 
 # ---------- Step 4: Build app images ----------
@@ -80,6 +84,9 @@ if ($LASTEXITCODE -ne 0) { throw "Docker save failed!" }
 Write-Host "  Copying deploy config files..."
 Copy-Item "$ProjectDir\docker-compose.yml" "$ExportDir\" -Force
 Copy-Item "$ProjectDir\.env.docker" "$ExportDir\" -Force
+# 先删除旧的 docker/ 和 sql/ 目录，防止残留文件污染
+if (Test-Path "$ExportDir\docker") { Remove-Item "$ExportDir\docker" -Recurse -Force }
+if (Test-Path "$ExportDir\sql")    { Remove-Item "$ExportDir\sql" -Recurse -Force }
 Copy-Item "$ProjectDir\docker" "$ExportDir\docker" -Recurse -Force
 Copy-Item "$ProjectDir\sql" "$ExportDir\sql" -Recurse -Force
 Copy-Item "$ProjectDir\docker\scripts" "$ExportDir\scripts" -Recurse -Force

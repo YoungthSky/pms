@@ -27,11 +27,11 @@ services:
       - ${MYSQL_DATA_DIR:-./data/mysql}:/var/lib/mysql
       # 初始化SQL（仅首次启动执行，按文件名字母顺序）
       - ./docker/mysql/init:/docker-entrypoint-initdb.d
-      # 业务SQL脚本（按字母顺序执行）
+      # 基础系统SQL（固定序号，保证在业务表之前执行）
       - ./sql/ry_20260417.sql:/docker-entrypoint-initdb.d/01-ry-schema.sql
       - ./sql/quartz.sql:/docker-entrypoint-initdb.d/02-quartz.sql
-      - ./sql/pm/罪犯基本信息表.sql:/docker-entrypoint-initdb.d/03-criminals-archive.sql
-      - ./sql/pm/就医记录表.sql:/docker-entrypoint-initdb.d/04-medical-records.sql
+      # 业务模块SQL（目录挂载，新增表文件放入 sql/pm/ 后自动执行，无需修改配置）
+      - ./sql/pm:/docker-entrypoint-initdb.d
       # 备份文件挂载（方便还原操作）
       - ${BACKUP_DIR:-./data/backup}:/backup
     command:

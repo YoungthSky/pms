@@ -52,8 +52,8 @@ pms/
 │   ├── ry_20260417.sql                         # 系统基础表
 │   ├── quartz.sql                              # 定时任务表
 │   └── pm/                                     # 业务模块表
-│       ├── 罪犯基本信息表.sql
-│       └── 就医记录表.sql
+│       ├── t_criminals_archive.sql
+│       └── t_medical_records.sql
 └── data/                                       # 运行时数据（自动生成，不入Git）
     ├── mysql/                                  # MySQL 数据文件
     ├── redis/                                  # Redis 持久化文件
